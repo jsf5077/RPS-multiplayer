@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Roshambo</title>
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+     <!-- Bootstrap CDN-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+    <!--Linking css file-->
+    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+     <!-- viewport meta tag -->
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  </head>
+
+  <body>
+   
+    <script>
+        // My web app's Firebase configuration
+        var firebaseConfig = {
+          apiKey: "AIzaSyAyFOsHWx5X57F6qslGTSi1dzJz8tKrres",
+          authDomain: "rock-paper-scissors-c8ebe.firebaseapp.com",
+          databaseURL: "https://rock-paper-scissors-c8ebe.firebaseio.com",
+          projectId: "rock-paper-scissors-c8ebe",
+          storageBucket: "rock-paper-scissors-c8ebe.appspot.com",
+          messagingSenderId: "830919806790",
+          appId: "1:830919806790:web:5866e7d2a9f1c9a2"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+    </script>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="/__/firebase/6.1.1/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#reserved-urls -->
+
+    <!-- Initialize Firebase -->
+    <script src="/__/firebase/init.js"></script>
+    <!-- Script -->
+    <script type="text/javascript" src="assets/javascript/app.js"></script>
+  </body>
+
+</html>
