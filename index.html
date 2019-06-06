@@ -13,7 +13,10 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
-    <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-database.js"></script>
+
     <!--Linking css file-->
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
      <!-- viewport meta tag -->
@@ -22,6 +25,10 @@
   </head>
 
   <body>
+
+        <h3>
+            <span id="watchers"></span> people are watching you click! Don't let them down!</span>
+        </h3>
    
     <script>
         // My web app's Firebase configuration
@@ -37,18 +44,49 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
 
+        // Create a variable to reference the database.
+        var database = firebase.database();
+
+        // connectionsRef references a specific location in our database.
+        var connectionsRef = database.ref("/connections");
+
+        // '.info/connected' is a special location provided by Firebase that is updated every time
+        // the client's connection state changes.
+        // '.info/connected' is a boolean value, true if the client is connected and false if they are not.
+        var connectedRef = database.ref(".info/connected");
+
+        // When the client's connection state changes...
+        connectedRef.on("value", function(snap) {
+
+            // If they are connected..
+            if (snap.val()) {
+
+                // Add user to the connections list.
+                var con = connectionsRef.push(true);
+
+                // Remove user from the connection list when they disconnect.
+                con.onDisconnect().remove();
+            }
+        });
+
+        // When first loaded or when the connections list changes...
+        connectionsRef.on("value", function(snapshot) {
+
+        // Display the viewer count in the html.
+        // The number of online users is the number of children in the connections list.
+        $("#watchers").text(snapshot.numChildren());
+        });
+
     </script>
 
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="/__/firebase/6.1.1/firebase-app.js"></script>
 
-    <!-- TODO: Add SDKs for Firebase products that you want to use
-     https://firebase.google.com/docs/web/setup#reserved-urls -->
 
-    <!-- Initialize Firebase -->
-    <script src="/__/firebase/init.js"></script>
-    <!-- Script -->
-    <script type="text/javascript" src="assets/javascript/app.js"></script>
   </body>
 
+  <!-- activities referenced: 7.2:15 -->
+
 </html>
+
+
