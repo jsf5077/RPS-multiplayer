@@ -14,13 +14,13 @@
       // Create a variable to reference the database.
       var database = firebase.database();
 
-      var name = "";
-      var message = "";
-      var time = "";
-      var date = "";
 
-      $("#submit").on("click", function(event) {
+    $("#submit").on("click", function(event) {
           event.preventDefault();
+
+          var name = "";
+          var message = "";
+
 
         // Puts out an alert if name is blank
         if ($("#name-input").val()=="") {
@@ -38,39 +38,45 @@
             // if message isn't blank, we assign the value to the message variable
             message = $("#message-input").val().trim();
         }
-        date = moment().format("DD/MM/YY hh:mm A");
-          
+        var date = moment().format("DD/MM/YY hh:mm A");
 
+        var newUser = {
+            name: name,
+            message: message,
+            time: firebase.database.ServerValue.TIMESTAMP,
+            date: date
+        };
+          
           // Code for handling the push
-          database.ref().push({
-              name: name,
-              message: message,
-              time: firebase.database.ServerValue.TIMESTAMP,
-              date: date
-          });
-      });
+          database.ref("/chat").push(newUser)
+              
+    });
 
       // Firebase watcher .on("child_added"
-  database.ref().on("child_added", function(snapshot) {
+  database.ref("/chat").on("child_added", function(snapshot) {
     // storing the snapshot.val() in a variable for convenience
     var sv = snapshot.val();
 
+    var newUser = sv.newUser;
+
     // Console.loging the last user's data
-    console.log(sv.name);
-    console.log(sv.message);
-    console.log(sv.time);
-    console.log(sv.date);
-    console.log(new Date(snapshot.val()))
+    // console.log(sv.name);
+    // console.log(sv.message);
+    // console.log(sv.time);
+    // console.log(sv.date);
+    // console.log(new Date(snapshot.val()))
+    console.log(newUser);
 
 
     // full list of items to the message div
-    $("#messages").append("<div class='container'><span class='user-name'> " +
-    sv.name +
-    ": </span><span class='user-message'> " + sv.message +
-    " <span class='time-right'> " + sv.date +
-    " </span></div>");
+    $("#messages").append(
+        "<div class='container'><span class='user-name'> " + sv.name +
+        ": </span><span class='user-message'> " + sv.message +
+        " <span class='time-right'> " + sv.date +
+        " </span></div>"
+    );
     
-    
+
     
     // Handle the errors
   }, function(errorObject) {
