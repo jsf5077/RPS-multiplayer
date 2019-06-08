@@ -42,14 +42,16 @@
     console.log(sv.name);
     console.log(sv.message);
     console.log(sv.time);
+    console.log(new Date(snapshot.val()))
 
 
-    // Change the HTML to reflect
-    $("#messages").text(sv.name);
+    // full list of items to the well
+    $("#messages").append("<div class='container'><span class='user-name'> " +
+    sv.name +
+    ": </span><span class='user-message'> " + sv.message +
+    " <span class='time-right'> " + moment().format("DD/MM/YY hh:mm A") +
+    " </span></div>"); 
     
-    
-    
-
     // Handle the errors
   }, function(errorObject) {
     console.log("Errors handled: " + errorObject.code);
@@ -87,3 +89,67 @@
       // The number of online users is the number of children in the connections list.
       $("#watchers").text(snapshot.numChildren());
       });
+
+
+// user is connected
+
+// user enters name   
+//       assign to player one  
+//         if player one exists, assign player two
+//             if play one and two exist, become spectator 
+
+// user picks rock/paper/scissors
+//       record answer to database
+//       check is other user has answers
+//         if not yet
+//             update html to say waiting on other user
+//         if other user has answered
+//             run a function that checks winner
+//                 if user 1 choice === user 2 choice
+//                     user 1 tie++;
+//                     user 2 tie++;  
+//                 else if user 1 chose rock and user 2 chose paper
+//                     user 1 loss++
+//                     user 2 win++
+//                 else if user 1 chose rock and user 2 chose scissors
+//                     user  1 win++
+//                     user 2 loss++
+//                 else if user 1 chose scissors and user 2 chose paper
+//                     user  1 win++
+//                     user 2 loss++
+//                 else if user 1 chose scissors and user 2 chose rock
+//                     user  1 loss++
+//                     user 2 win++
+//                 else if user 1 chose paper and user 2 chose rock
+//                     user  1 win++
+//                     user 2 loss++
+//                 else if user 1 chose paper and user 2 chose scissors
+//                     user  1 loss++
+//                     user 2 win++
+//         update html to reflect winner/loser win/loss 
+
+//         update database to reflect winner/loser win/loss 
+
+//         reset html winner/loser and user 1 & 2 choices
+
+//         reset database winner/loser and user 1 & 2 choices
+
+//         if user disconnects 
+
+
+
+
+//       Create a game that suits this user story:
+
+//   * Only two users can play at the same time.
+
+//   * Both players pick either `rock`, `paper` or `scissors`. After the players make their selection, the game will tell them whether a tie occurred or if one player defeated the other.
+
+//   * The game will track each player's wins and losses.
+
+//   * Throw some chat functionality in there! No online multiplayer game is complete without having to endure endless taunts and insults from your jerk opponent.
+
+//   * Styling and theme are completely up to you. Get Creative!
+
+//   * Deploy your assignment to Github Pages.
+

@@ -31,16 +31,19 @@
     </h3>
 
     <div id="main">
-        <textarea id="messages" cols="80" rows="12" disabled="true"></textarea>
-        <div id="controls">
-            <label for="author">Name: </label><input id="name-input" type="text"><br>
-            <label for="content">Message: </label><input id="message-input" type="text">
-            <input id="submit" type="button" value="Send">
-            <input id="refresh" type="button" value="Refresh">
-        </div>
+        <div class="card-body" id="messages"></div>
+    </div>
+    <div id="controls">
+        <label for="author">Name: </label><input id="name-input" type="text"><br>
+        <label for="content">Message: </label><input id="message-input" type="text">
+        <input id="submit" type="button" value="Send">
+        <input id="refresh" type="button" value="Refresh">
     </div>    
 
     <script type="text/javascript" src="assets/javascript/app.js"></script>
+
+     <!-- Link to Moment.js -->
+  <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
   </body>
 
   <!-- activities referenced: 7.2:15 -->
