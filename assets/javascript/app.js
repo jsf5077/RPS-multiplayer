@@ -26,6 +26,7 @@ var connectionsRef = db.ref("/connections");
 // '.info/connected' is a boolean value, true if the client is connected and false if they are not.
 var connectedRef = db.ref(".info/connected");
 
+
 //variables to initiate players of the game
 var playerOne = null;
 var playerTwo = null;
@@ -38,7 +39,10 @@ var playerTwoName = "";
 
 var playerNum = "";
 
+;
+
 //////////////////////////////  End Global Elements  //////////////////////////////
+
 
 //////////////////////////////  Start Chat Function  //////////////////////////////
 
@@ -144,6 +148,21 @@ db.ref("/players/").on("value", function(snapshot) {
     } else {
         //and if the user signing off was never assigned a number because they were a visitor, then we return nothing.
         return;
+    }
+});
+
+db.ref("/players/").on("value", function(snapshot) {
+    if ((snapshot.child("playerOne").exists()) && snapshot.child("playerTwo").exists()) {
+        $("#logIn").hide();
+        $("#visitor").text("Player One and Player Two are ready...");
+    } else {
+        if (snapshot.child("playerOne").exists()) {
+            $("#p2Name").text('');
+        } else if (snapshot.child("playerTwo").exists()) {
+            $("#p1Name").text('');
+        }
+        $("#logIn").show();
+        $("#visitor").text('');
     }
 });
 
