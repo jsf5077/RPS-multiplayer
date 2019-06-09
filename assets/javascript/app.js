@@ -1,72 +1,83 @@
-    // My web app's Firebase configuration
-    var firebaseConfig = {
-        apiKey: "AIzaSyAyFOsHWx5X57F6qslGTSi1dzJz8tKrres",
-        authDomain: "rock-paper-scissors-c8ebe.firebaseapp.com",
-        databaseURL: "https://rock-paper-scissors-c8ebe.firebaseio.com",
-        projectId: "rock-paper-scissors-c8ebe",
-        storageBucket: "rock-paper-scissors-c8ebe.appspot.com",
-        messagingSenderId: "830919806790",
-        appId: "1:830919806790:web:5866e7d2a9f1c9a2"
-      };
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
+//////////////////////////////  Start Global Elements  //////////////////////////////
+// My web app's Firebase configuration
+var firebaseConfig = {
+    apiKey: "AIzaSyAyFOsHWx5X57F6qslGTSi1dzJz8tKrres",
+    authDomain: "rock-paper-scissors-c8ebe.firebaseapp.com",
+    databaseURL: "https://rock-paper-scissors-c8ebe.firebaseio.com",
+    projectId: "rock-paper-scissors-c8ebe",
+    storageBucket: "rock-paper-scissors-c8ebe.appspot.com",
+    messagingSenderId: "830919806790",
+    appId: "1:830919806790:web:5866e7d2a9f1c9a2"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
-      // Create a variable to reference the database.
-      var database = firebase.database();
+// Create a variables for the database.
+var db = firebase.database();
+//create player references for the database
+var playersData = db.ref("/players");
+//create chat refences for the database
+var chatData = db.ref("/chat");
+// connectionsRef references a specific location in our database.
+var connectionsRef = db.ref("/connections");
 
+// '.info/connected' is a special location provided by Firebase that is updated every time
+// the client's connection state changes.
+// '.info/connected' is a boolean value, true if the client is connected and false if they are not.
+var connectedRef = db.ref(".info/connected");
 
-    $("#submit").on("click", function(event) {
-          event.preventDefault();
+//variables to initiate players of the game
+var playerOne = null;
+var playerTwo = null;
+var visitor = null;
+var name = "";
+var message = "";
 
-          var name = "";
-          var message = "";
+var playerOneName = "";
+var playerTwoName = "";
 
+//////////////////////////////  End Global Elements  //////////////////////////////
 
-        // Puts out an alert if name is blank
-        if ($("#name-input").val()=="") {
-            alert("Enter a Valid Name");
-                return false;
-        } else {
-            // if name isn't blank, we assign the value to the name variable
-            name = $("#name-input").val().trim();
-        }
-        // Puts out an alert if message is blank
-        if ($("#message-input").val()=="") {
-            alert("Enter a Valid Message");
-                return false;
-        } else {
-            // if message isn't blank, we assign the value to the message variable
-            message = $("#message-input").val().trim();
-        }
-        var date = moment().format("DD/MM/YY hh:mm A");
+//////////////////////////////  Start Chat Function  //////////////////////////////
 
-        var newUser = {
-            name: name,
-            message: message,
-            time: firebase.database.ServerValue.TIMESTAMP,
-            date: date
-        };
-          
-          // Code for handling the push
-          database.ref("/chat").push(newUser)
-              
-    });
+$("#submit").on("click", function(event) {
+    event.preventDefault();
 
-      // Firebase watcher .on("child_added"
-  database.ref("/chat").on("child_added", function(snapshot) {
+    // Puts out an alert if name is blank
+    if ($("#name-input").val()=="") {
+        alert("Enter a Valid Name");
+            return false;
+    } else {
+        // if name isn't blank, we assign the value to the name variable
+        name = $("#name-input").val().trim();
+    }
+    // Puts out an alert if message is blank
+    if ($("#message-input").val()=="") {
+        alert("Enter a Valid Message");
+            return false;
+    } else {
+        // if message isn't blank, we assign the value to the message variable
+        message = $("#message-input").val().trim();
+    }
+    var date = moment().format("DD/MM/YY hh:mm A");
+
+    //locally log data for the specific chat message
+    var chatMsg = {
+        name: name,
+        message: message,
+        time: firebase.database.ServerValue.TIMESTAMP,
+        date: date
+    };
+        
+        // Code for handling the push
+        chatData.push(chatMsg)
+            
+});
+
+    // Firebase watcher .on("child_added"
+chatData.on("child_added", function(snapshot) {
     // storing the snapshot.val() in a variable for convenience
     var sv = snapshot.val();
-
-    var newUser = sv.newUser;
-
-    // Console.loging the last user's data
-    // console.log(sv.name);
-    // console.log(sv.message);
-    // console.log(sv.time);
-    // console.log(sv.date);
-    // console.log(new Date(snapshot.val()))
-    console.log(newUser);
-
 
     // full list of items to the message div
     $("#messages").append(
@@ -75,49 +86,133 @@
         " <span class='time-right'> " + sv.date +
         " </span></div>"
     );
-    
 
-    
+
+
     // Handle the errors
-  }, function(errorObject) {
+    }, function(errorObject) {
     console.log("Errors handled: " + errorObject.code);
-  });
+});
+
+//////////////////////////////  End Chat Function  //////////////////////////////
+
+//////////////////////////////  Start Login Function  //////////////////////////////
 
 
+db.ref("/players/").on("value", function(snapshot) {
+	// Check for existence of player 1 in the database
+	if (snapshot.child("playerOne").exists()) {
+		console.log("Ready Player One");
+
+		// Record player One data
+		playerOne = snapshot.val().playerOne;
+		playerOneName = playerOne.name;
+
+		// Update player One name
+        $("#p1Name").text(playerOneName);
+        
+	} else {
+        playerOne = null;
+		playerOneName = "";
+    }
+    if (snapshot.child("playerTwo").exists()) {
+		console.log("Ready Player Two");
+
+		// Record player One data
+		playerTwo = snapshot.val().playerTwo;
+		playerTwoName = playerTwo.name;
+
+		// Update player One name
+        $("#p2Name").text(playerTwoName);
+        
+	} else {
+        playerTwo = null;
+		playerTwoName = "";
+    }
+});
+if (playerOne && playerTwo) {
+    console.log("Welcome visitor");
+}
+
+// When the client's connection state changes...
+connectedRef.on("value", function(snap) {
+
+    // If they are connected..
+    if (snap.val()) {
+
+        // Add user to the connections list.
+        var con = connectionsRef.push(true);
+        $("#logInSubmit").on("click", function(event) {
+            event.preventDefault();
+            //checks to make sure the name field isn't blank
+            if ($("#name-input").val()=="") {
+                alert("Enter a Valid Name");
+                    return false;
+            // if user entered data in the name field...
+            } else {
+                //hide the login part with the name written in. 
+                $("#logIn").hide();
+                if (!playerOne) {
+
+                    playerOne = {
+                        name: name,
+                        wins: 0,
+                        losses: 0,
+                        choice: '' 
+                    }
+
+                    db.ref().child("/players/playerOne").set(playerOne);
+                    console.log("Player One Stats on DB");
+
+                } else if (!playerTwo) {
+
+                    playerTwo = {
+                        name: name,
+                        wins: 0,
+                        losses: 0,
+                        choice: '' 
+                    }
+
+                    db.ref().child("/players/playerTwo").set(playerTwo);
+                    console.log("Player Two Stats on DB");
+
+                } else {
+                    //not quite sure how to handle this yet
+                    visitor = true;;
+                    db.ref().child("/players/visitor").set(visitor);
+                    console.log("assigned visitor");
+                    
+                }
+                
+
+            }
+        });
+
+        // Remove user from the connection list when they disconnect.
+        con.onDisconnect().remove();
+    
+    } 
+});
+
+// When first loaded or when the connections list changes...
+connectionsRef.on("value", function(snapshot) {
+
+// Display the viewer count in the html.
+// The number of online users is the number of children in the connections list.
+$("#watchers").text(snapshot.numChildren());
+});
 
 
-      // connectionsRef references a specific location in our database.
-      var connectionsRef = database.ref("/connections");
-
-      // '.info/connected' is a special location provided by Firebase that is updated every time
-      // the client's connection state changes.
-      // '.info/connected' is a boolean value, true if the client is connected and false if they are not.
-      var connectedRef = database.ref(".info/connected");
-
-      // When the client's connection state changes...
-      connectedRef.on("value", function(snap) {
-
-          // If they are connected..
-          if (snap.val()) {
-
-              // Add user to the connections list.
-              var con = connectionsRef.push(true);
-
-              // Remove user from the connection list when they disconnect.
-              con.onDisconnect().remove();
-          }
-      });
-
-      // When first loaded or when the connections list changes...
-      connectionsRef.on("value", function(snapshot) {
-
-      // Display the viewer count in the html.
-      // The number of online users is the number of children in the connections list.
-      $("#watchers").text(snapshot.numChildren());
-      });
-
-
-// user is connected
+// // user is connected
+// var user1 = false;
+// db.ref("/userOne");
+// $("#logInSubmit").on("click", function(event) {
+//     event.preventDefault();
+//     user1 = true;
+//     db.ref("/userOne").push(user1)
+//     $("#logIn").hide();
+// });
+//////////////////////////////  End Login Function  //////////////////////////////
 
 // user enters name   
 //       assign to player one  
