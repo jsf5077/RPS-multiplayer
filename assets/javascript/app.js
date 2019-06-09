@@ -36,6 +36,8 @@ var message = "";
 var playerOneName = "";
 var playerTwoName = "";
 
+var playerNum = "";
+
 //////////////////////////////  End Global Elements  //////////////////////////////
 
 //////////////////////////////  Start Chat Function  //////////////////////////////
@@ -69,9 +71,10 @@ $("#submit").on("click", function(event) {
         date: date
     };
         
-        // Code for handling the push
-        chatData.push(chatMsg)
-            
+    // Code for handling the push
+    chatData.push(chatMsg)
+    //clears message input box 
+    $("#message-input").val("");            
 });
 
     // Firebase watcher .on("child_added"
@@ -102,10 +105,11 @@ chatData.on("child_added", function(snapshot) {
 db.ref("/players/").on("value", function(snapshot) {
 	// Check for existence of player 1 in the database
 	if (snapshot.child("playerOne").exists()) {
-		console.log("Ready Player One");
+        console.log("Ready Player One");
+        var sv = snapshot.val();
 
 		// Record player One data
-		playerOne = snapshot.val().playerOne;
+		playerOne = sv.playerOne;
 		playerOneName = playerOne.name;
 
 		// Update player One name
@@ -119,7 +123,7 @@ db.ref("/players/").on("value", function(snapshot) {
 		console.log("Ready Player Two");
 
 		// Record player One data
-		playerTwo = snapshot.val().playerTwo;
+		playerTwo = sv.playerTwo;
 		playerTwoName = playerTwo.name;
 
 		// Update player One name
@@ -129,16 +133,25 @@ db.ref("/players/").on("value", function(snapshot) {
         playerTwo = null;
 		playerTwoName = "";
     }
+    //handles the database information for players when user disconnects
+    //playerNum is a local variable that is used which player the user is
+    if (playerNum == 1) {
+        //so if playerNum is 1 and they disconnect, the PlayerOne database is cleared for the next person
+        db.ref("/players/playerOne").onDisconnect().remove();
+        // otherwise if they are player we, the playerTwo database is cleared instead
+    } else if (playerNum == 2) {
+        db.ref("/players/playerTwo").onDisconnect().remove(); 
+    } else {
+        //and if the user signing off was never assigned a number because they were a visitor, then we return nothing.
+        return;
+    }
 });
-if (playerOne && playerTwo) {
-    console.log("Welcome visitor");
-}
 
 // When the client's connection state changes...
-connectedRef.on("value", function(snap) {
+connectedRef.on("value", function(snapshot) {
 
     // If they are connected..
-    if (snap.val()) {
+    if (snapshot.val()) {
 
         // Add user to the connections list.
         var con = connectionsRef.push(true);
@@ -153,7 +166,9 @@ connectedRef.on("value", function(snap) {
                 //hide the login part with the name written in. 
                 $("#logIn").hide();
                 if (!playerOne) {
-
+                    name = $("#name-input").val().trim();
+                    playerNum = 1;
+                    console.log("playerNum = 1");
                     playerOne = {
                         name: name,
                         wins: 0,
@@ -165,7 +180,9 @@ connectedRef.on("value", function(snap) {
                     console.log("Player One Stats on DB");
 
                 } else if (!playerTwo) {
-
+                    name = $("#name-input").val().trim()
+                    playerNum = 2;
+                    console.log("playerNum = 2");
                     playerTwo = {
                         name: name,
                         wins: 0,
@@ -190,6 +207,8 @@ connectedRef.on("value", function(snap) {
 
         // Remove user from the connection list when they disconnect.
         con.onDisconnect().remove();
+        
+        
     
     } 
 });
