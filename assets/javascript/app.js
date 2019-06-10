@@ -39,10 +39,13 @@ var playerTwoName = "";
 
 var playerNum = "";
 
-;
+var playerOneChoice = null;
+var playerTwoChoice = null;
+
+$("#visitLogIn").hide();
+$("#RPS").hide();
 
 //////////////////////////////  End Global Elements  //////////////////////////////
-
 
 //////////////////////////////  Start Chat Function  //////////////////////////////
 
@@ -50,12 +53,12 @@ $("#submit").on("click", function(event) {
     event.preventDefault();
 
     // Puts out an alert if name is blank
-    if ($("#name-input").val()=="") {
+    if ($("#sign-name-input").val()=="") {
         alert("Enter a Valid Name");
             return false;
     } else {
         // if name isn't blank, we assign the value to the name variable
-        name = $("#name-input").val().trim();
+        name = $("#sign-name-input").val().trim();
     }
     // Puts out an alert if message is blank
     if ($("#message-input").val()=="") {
@@ -126,11 +129,11 @@ db.ref("/players/").on("value", function(snapshot) {
     if (snapshot.child("playerTwo").exists()) {
 		console.log("Ready Player Two");
 
-		// Record player One data
+		// Record player Two data
 		playerTwo = sv.playerTwo;
 		playerTwoName = playerTwo.name;
 
-		// Update player One name
+		// Update player Two name
         $("#p2Name").text(playerTwoName);
         
 	} else {
@@ -138,13 +141,13 @@ db.ref("/players/").on("value", function(snapshot) {
 		playerTwoName = "";
     }
     //handles the database information for players when user disconnects
-    //playerNum is a local variable that is used which player the user is
+    //playerNum is a local variable that is used to confirm which player the user is
     if (playerNum == 1) {
         //so if playerNum is 1 and they disconnect, the PlayerOne database is cleared for the next person
         db.ref("/players/playerOne").onDisconnect().remove();
-        // otherwise if they are player we, the playerTwo database is cleared instead
+        // otherwise if they are player two, the playerTwo database is cleared instead
     } else if (playerNum == 2) {
-        db.ref("/players/playerTwo").onDisconnect().remove(); 
+        db.ref("/players/playerTwo").onDisconnect().remove();
     } else {
         //and if the user signing off was never assigned a number because they were a visitor, then we return nothing.
         return;
@@ -154,14 +157,20 @@ db.ref("/players/").on("value", function(snapshot) {
 db.ref("/players/").on("value", function(snapshot) {
     if ((snapshot.child("playerOne").exists()) && snapshot.child("playerTwo").exists()) {
         $("#logIn").hide();
+        $("#visitLogIn").show();
+        if (playerNum == 1 || playerNum == 2) {
+            $("#visitLogIn").hide();
+        }
+        
         $("#visitor").text("Player One and Player Two are ready...");
     } else {
+        $("#logIn").show();
+        $("#visitLogIn").hide();
         if (snapshot.child("playerOne").exists()) {
             $("#p2Name").text('');
         } else if (snapshot.child("playerTwo").exists()) {
             $("#p1Name").text('');
         }
-        $("#logIn").show();
         $("#visitor").text('');
     }
 });
@@ -177,17 +186,20 @@ connectedRef.on("value", function(snapshot) {
         $("#logInSubmit").on("click", function(event) {
             event.preventDefault();
             //checks to make sure the name field isn't blank
-            if ($("#name-input").val()=="") {
+            if ($("#sign-name-input").val()=="") {
                 alert("Enter a Valid Name");
                     return false;
             // if user entered data in the name field...
             } else {
+                var signName = $("#sign-name-input").val().trim(); 
                 //hide the login part with the name written in. 
-                $("#logIn").hide();
+                $("#name-input").text(signName);
+                
                 if (!playerOne) {
                     name = $("#name-input").val().trim();
                     playerNum = 1;
                     console.log("playerNum = 1");
+                    $("#RPS").show();
                     playerOne = {
                         name: name,
                         wins: 0,
@@ -202,6 +214,7 @@ connectedRef.on("value", function(snapshot) {
                     name = $("#name-input").val().trim()
                     playerNum = 2;
                     console.log("playerNum = 2");
+                    $("#RPS").show();
                     playerTwo = {
                         name: name,
                         wins: 0,
@@ -222,13 +235,11 @@ connectedRef.on("value", function(snapshot) {
                 
 
             }
+        $("#logIn").hide();
         });
 
         // Remove user from the connection list when they disconnect.
         con.onDisconnect().remove();
-        
-        
-    
     } 
 });
 
@@ -240,17 +251,62 @@ connectionsRef.on("value", function(snapshot) {
 $("#watchers").text(snapshot.numChildren());
 });
 
+//For visitors
+$("#visitorSubmit").on("click", function(event) {
+    event.preventDefault();
+    var name = $("#visit-name-input").val().trim();
+    $("#name-input").text(name);
+    $("#sign-name-input").val(name);
+    $("#visitLogIn").hide();
+});
 
-// // user is connected
-// var user1 = false;
-// db.ref("/userOne");
-// $("#logInSubmit").on("click", function(event) {
-//     event.preventDefault();
-//     user1 = true;
-//     db.ref("/userOne").push(user1)
-//     $("#logIn").hide();
-// });
 //////////////////////////////  End Login Function  //////////////////////////////
+
+//////////////////////////////  Start Game Function  //////////////////////////////
+$("#rock").on("click", function(event){
+    event.preventDefault();
+    if (playerNum == 1) {
+        playerOneChoice = $("#rock").text();
+        console.log(playerOneChoice);
+        db.ref().child("/players/playerOne/choice").set(playerOneChoice);
+    } else if (playerNum == 2) {
+        playerTwoChoice = $("#rock").text();
+        console.log(playerTwoChoice);
+        db.ref().child("/players/playerTwo/choice").set(playerTwoChoice);
+    }
+});
+$("#paper").on("click", function(event){
+    event.preventDefault();
+    if (playerNum == 1) {
+        playerOneChoice = $("#paper").text();
+        console.log(playerOneChoice);
+        db.ref().child("/players/playerOne/choice").set(playerOneChoice);
+    } else if (playerNum == 2) {
+        playerTwoChoice = $("#paper").text();
+        console.log(playerTwoChoice);
+        db.ref().child("/players/playerTwo/choice").set(playerTwoChoice);
+    }
+});
+$("#scissors").on("click", function(event){
+    event.preventDefault();
+    if (playerNum == 1) {
+        playerOneChoice = $("#scissors").text();
+        console.log(playerOneChoice);
+        db.ref().child("/players/playerOne/choice").set(playerOneChoice);
+    } else if (playerNum == 2) {
+        playerTwoChoice = $("#scissors").text();
+        console.log(playerTwoChoice);
+        db.ref().child("/players/playerTwo/choice").set(playerTwoChoice);
+    }
+});
+
+
+
+
+
+
+//////////////////////////////  End Game Function  //////////////////////////////
+
 
 // user enters name   
 //       assign to player one  
