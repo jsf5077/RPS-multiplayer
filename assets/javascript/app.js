@@ -42,6 +42,7 @@ var playerNum = "";
 var playerOneChoice = null;
 var playerTwoChoice = null;
 
+
 $("#visitLogIn").hide();
 $("#RPS").hide();
 
@@ -204,6 +205,7 @@ connectedRef.on("value", function(snapshot) {
                         name: name,
                         wins: 0,
                         losses: 0,
+                        ties: 0,
                         choice: '' 
                     }
 
@@ -219,6 +221,7 @@ connectedRef.on("value", function(snapshot) {
                         name: name,
                         wins: 0,
                         losses: 0,
+                        ties: 0,
                         choice: '' 
                     }
 
@@ -300,8 +303,69 @@ $("#scissors").on("click", function(event){
     }
 });
 
+db.ref("/players/").on("value", function(snapshot) {
+    playerOneChoice = snapshot.child("playerOne/choice").val();
+    console.log(playerOneChoice);
+    playerTwoChoice = snapshot.child("playerTwo/choice").val(); 
+    console.log(playerTwoChoice);
+    if (playerNum == 1) {
+        if (!playerOneChoice) {
+        $("#choices").text("Please make a selection");
+        } else if (!playerTwoChoice) {
+            $("#RPS").hide();
+            $("#logIn").hide();
+            $("#choices").text("Waiting on Player Two");
+        } else {
+            $("#choices").text("Selections Made");
+            checkWinner();
+        }
+    }
+    if (playerNum == 2) {
+        if (!playerTwoChoice) {
+        $("#choices").text("Please make a selection");
+        } else if (!playerOneChoice) {
+            $("#RPS").hide();
+            $("#logIn").hide();
+            $("#choices").text("Waiting on Player One");
+        } else {
+            $("#choices").text("Selections Made");
+            checkWinner();
+        }
+    }
+});
 
+///////////working space below with potential errors///////////////////
 
+function checkWinner() {
+    if (playerOneChoice === playerTwoChoice) {
+        if (!playerOneChoice && !playerTwoChoice) {
+        return;
+        } else {
+            db.ref("/players/").on("value", function(snapshot) {
+                var p1Tie = snapshot.child("playerOne/ties").val();
+                p1Tie++; 
+                var p2Tie = snapshot.child("playerTwo/ties").val();
+                p2Tie++;
+                db.ref().child("/players/playerOne/ties").set( p1Tie);
+                db.ref().child("/players/playerTwo/ties").set( p2Tie);
+                reset();
+                return;
+            });
+        }
+
+    console.log("choices checked");
+    } else {
+        console.log("no ties");
+    }
+};
+
+function reset() {
+    playerOneChoice = null;
+    playerTwoChoice = null;
+    db.ref().child("/players/playerOne/choice").set('');
+    db.ref().child("/players/playerTwo/choice").set('');
+    $("#RPS").show();
+};
 
 
 
