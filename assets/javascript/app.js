@@ -15,11 +15,13 @@ firebase.initializeApp(firebaseConfig);
 // Create a variables for the database.
 var db = firebase.database();
 //create player references for the database
-var playersData = db.ref("/players");
+var playersData = db.ref("/players/");
 //create chat refences for the database
 var chatData = db.ref("/chat");
 // connectionsRef references a specific location in our database.
 var connectionsRef = db.ref("/connections");
+
+var playersData = db.ref("/choices");
 
 // '.info/connected' is a special location provided by Firebase that is updated every time
 // the client's connection state changes.
@@ -38,9 +40,6 @@ var playerOneName = "";
 var playerTwoName = "";
 
 var playerNum = "";
-
-var playerOneChoice = null;
-var playerTwoChoice = null;
 
 
 $("#visitLogIn").hide();
@@ -97,9 +96,6 @@ chatData.on("child_added", function(snapshot) {
         " <span class='time-right'> " + sv.date +
         " </span></div>"
     );
-
-
-
     // Handle the errors
     }, function(errorObject) {
     console.log("Errors handled: " + errorObject.code);
@@ -111,10 +107,10 @@ chatData.on("child_added", function(snapshot) {
 
 
 db.ref("/players/").on("value", function(snapshot) {
+    var sv = snapshot.val();
 	// Check for existence of player 1 in the database
 	if (snapshot.child("playerOne").exists()) {
         console.log("Ready Player One");
-        var sv = snapshot.val();
 
 		// Record player One data
 		playerOne = sv.playerOne;
@@ -141,6 +137,15 @@ db.ref("/players/").on("value", function(snapshot) {
         playerTwo = null;
 		playerTwoName = "";
     }
+
+    if (playerOne && playerTwo) {
+        $("#visitor").text("Player One and Player Two are ready...");
+        console.log(" player one and two logged in")
+    }
+
+    if (!playerOne && !playerTwo) {
+        console.log("there are no players")
+    }
     //handles the database information for players when user disconnects
     //playerNum is a local variable that is used to confirm which player the user is
     if (playerNum == 1) {
@@ -154,26 +159,116 @@ db.ref("/players/").on("value", function(snapshot) {
         return;
     }
 });
+//     if ((snapshot.child("playerOne").exists()) && snapshot.child("playerTwo").exists()) {
+//         $("#logIn").hide();
+//         $("#visitLogIn").show();
+//         if (playerNum == 1 || playerNum == 2) {
+//             $("#visitLogIn").hide();
+//         }
+        
+//     } else {
+//         if (snapshot.child("playerOne").exists()) {
+//             $("#p2Name").text('');
+//         } else if (snapshot.child("playerTwo").exists()) {
+//             $("#p1Name").text('');
+//         }
+//         $("#visitor").text('');
+//     }
+//     playerOneChoice = snapshot.child("playerOne/choice").val();
+//     console.log(playerOneChoice);
+//     playerTwoChoice = snapshot.child("playerTwo/choice").val(); 
+//     console.log(playerTwoChoice);
+//     if (playerNum == 1) {
+//         if (!playerOneChoice) {
+//         $("#choices").text("Please make a selection");
+//         } else if (!playerTwoChoice) {
+//             $("#RPS").hide();
+//             $("#logIn").hide();
+//             $("#choices").text("Waiting on Player Two");
+//         } else {
+//             $("#choices").text("Selections Made");
+            
+//         }
+//     }
+//     if (playerNum == 2) {
+//         if (!playerTwoChoice) {
+//         $("#choices").text("Please make a selection");
+//         } else if (!playerOneChoice) {
+//             $("#RPS").hide();
+//             $("#logIn").hide();
+//             $("#choices").text("Waiting on Player One");
+//         } else {
+//             $("#choices").text("Selections Made");
+            
+//         }
+//     }
 
-db.ref("/players/").on("value", function(snapshot) {
-    if ((snapshot.child("playerOne").exists()) && snapshot.child("playerTwo").exists()) {
-        $("#logIn").hide();
-        $("#visitLogIn").show();
-        if (playerNum == 1 || playerNum == 2) {
-            $("#visitLogIn").hide();
+//// log in function////////
+
+$("#logInSubmit").on("click", function(event) {
+    event.preventDefault();
+    //checks to make sure the name field isn't blank
+    if ($("#sign-name-input").val()=="") {
+        alert("Enter a Valid Name");
+            return false;
+    // if user entered data in the name field...
+    } else {
+        var signName = $("#sign-name-input").val().trim(); 
+        //hide the login part with the name written in. 
+        $("#name-input").text(signName);
+        
+        if (!playerOne) {
+            name = $("#name-input").val().trim();
+            playerNum = 1;
+            console.log("playerNum = 1");
+            $("#RPS").show();
+            playerOne = {
+                name: name,
+                wins: 0,
+                losses: 0,
+                ties: 0,
+                choice: '' 
+            }
+
+            db.ref().child("/players/playerOne").set(playerOne);
+            console.log("Player One Stats on DB");
+
+        } else if (!playerTwo) {
+            name = $("#name-input").val().trim()
+            playerNum = 2;
+            console.log("playerNum = 2");
+            $("#RPS").show();
+            playerTwo = {
+                name: name,
+                wins: 0,
+                losses: 0,
+                ties: 0,
+                choice: '' 
+            }
+
+            db.ref().child("/players/playerTwo").set(playerTwo);
+            console.log("Player Two Stats on DB");
+
+        } else {
+            //not quite sure how to handle this yet
+            visitor = true;
+            db.ref().child("/players/visitor").set(visitor);
+            console.log("assigned visitor");
+            
         }
         
-        $("#visitor").text("Player One and Player Two are ready...");
-    } else {
-        $("#logIn").show();
-        $("#visitLogIn").hide();
-        if (snapshot.child("playerOne").exists()) {
-            $("#p2Name").text('');
-        } else if (snapshot.child("playerTwo").exists()) {
-            $("#p1Name").text('');
-        }
-        $("#visitor").text('');
+
     }
+$("#logIn").hide();
+});
+
+//For visitors
+$("#visitorSubmit").on("click", function(event) {
+    event.preventDefault();
+    var name = $("#visit-name-input").val().trim();
+    $("#name-input").text(name);
+    $("#sign-name-input").val(name);
+    $("#visitLogIn").hide();
 });
 
 // When the client's connection state changes...
@@ -181,66 +276,8 @@ connectedRef.on("value", function(snapshot) {
 
     // If they are connected..
     if (snapshot.val()) {
-
         // Add user to the connections list.
         var con = connectionsRef.push(true);
-        $("#logInSubmit").on("click", function(event) {
-            event.preventDefault();
-            //checks to make sure the name field isn't blank
-            if ($("#sign-name-input").val()=="") {
-                alert("Enter a Valid Name");
-                    return false;
-            // if user entered data in the name field...
-            } else {
-                var signName = $("#sign-name-input").val().trim(); 
-                //hide the login part with the name written in. 
-                $("#name-input").text(signName);
-                
-                if (!playerOne) {
-                    name = $("#name-input").val().trim();
-                    playerNum = 1;
-                    console.log("playerNum = 1");
-                    $("#RPS").show();
-                    playerOne = {
-                        name: name,
-                        wins: 0,
-                        losses: 0,
-                        ties: 0,
-                        choice: '' 
-                    }
-
-                    db.ref().child("/players/playerOne").set(playerOne);
-                    console.log("Player One Stats on DB");
-
-                } else if (!playerTwo) {
-                    name = $("#name-input").val().trim()
-                    playerNum = 2;
-                    console.log("playerNum = 2");
-                    $("#RPS").show();
-                    playerTwo = {
-                        name: name,
-                        wins: 0,
-                        losses: 0,
-                        ties: 0,
-                        choice: '' 
-                    }
-
-                    db.ref().child("/players/playerTwo").set(playerTwo);
-                    console.log("Player Two Stats on DB");
-
-                } else {
-                    //not quite sure how to handle this yet
-                    visitor = true;;
-                    db.ref().child("/players/visitor").set(visitor);
-                    console.log("assigned visitor");
-                    
-                }
-                
-
-            }
-        $("#logIn").hide();
-        });
-
         // Remove user from the connection list when they disconnect.
         con.onDisconnect().remove();
     } 
@@ -254,121 +291,103 @@ connectionsRef.on("value", function(snapshot) {
 $("#watchers").text(snapshot.numChildren());
 });
 
-//For visitors
-$("#visitorSubmit").on("click", function(event) {
-    event.preventDefault();
-    var name = $("#visit-name-input").val().trim();
-    $("#name-input").text(name);
-    $("#sign-name-input").val(name);
-    $("#visitLogIn").hide();
-});
-
 //////////////////////////////  End Login Function  //////////////////////////////
 
 //////////////////////////////  Start Game Function  //////////////////////////////
 $("#rock").on("click", function(event){
     event.preventDefault();
     if (playerNum == 1) {
-        playerOneChoice = $("#rock").text();
-        console.log(playerOneChoice);
-        db.ref().child("/players/playerOne/choice").set(playerOneChoice);
+        playerOne.choice = $("#rock").text();
+        console.log(playerOne.choice);
+        db.ref().child("/players/playerOne/choice").set(playerOne.choice);
     } else if (playerNum == 2) {
-        playerTwoChoice = $("#rock").text();
-        console.log(playerTwoChoice);
-        db.ref().child("/players/playerTwo/choice").set(playerTwoChoice);
+        playerTwo.choice = $("#rock").text();
+        console.log(playerTwo.choice);
+        db.ref().child("/players/playerTwo/choice").set(playerTwo.choice);
     }
+    // $("#RPS").hide();
+    checkWinner()
 });
 $("#paper").on("click", function(event){
     event.preventDefault();
     if (playerNum == 1) {
-        playerOneChoice = $("#paper").text();
-        console.log(playerOneChoice);
-        db.ref().child("/players/playerOne/choice").set(playerOneChoice);
+        playerOne.choice = $("#paper").text();
+        console.log(playerOne.choice);
+        db.ref().child("/players/playerOne/choice").set(playerOne.choice);
     } else if (playerNum == 2) {
-        playerTwoChoice = $("#paper").text();
-        console.log(playerTwoChoice);
-        db.ref().child("/players/playerTwo/choice").set(playerTwoChoice);
+        playerTwo.choice = $("#paper").text();
+        console.log(playerTwo.choice);
+        db.ref().child("/players/playerTwo/choice").set(playerTwo.choice);
     }
+    // $("#RPS").hide();
+    checkWinner()
 });
 $("#scissors").on("click", function(event){
     event.preventDefault();
     if (playerNum == 1) {
-        playerOneChoice = $("#scissors").text();
-        console.log(playerOneChoice);
-        db.ref().child("/players/playerOne/choice").set(playerOneChoice);
+        playerOne.choice = $("#scissors").text();
+        console.log(playerOne.choice);
+        db.ref().child("/players/playerOne/choice").set(playerOne.choice);
     } else if (playerNum == 2) {
-        playerTwoChoice = $("#scissors").text();
-        console.log(playerTwoChoice);
-        db.ref().child("/players/playerTwo/choice").set(playerTwoChoice);
+        playerTwo.choice = $("#scissors").text();
+        console.log(playerTwo.choice);
+        db.ref().child("/players/playerTwo/choice").set(playerTwo.choice);
     }
-});
-
-db.ref("/players/").on("value", function(snapshot) {
-    playerOneChoice = snapshot.child("playerOne/choice").val();
-    console.log(playerOneChoice);
-    playerTwoChoice = snapshot.child("playerTwo/choice").val(); 
-    console.log(playerTwoChoice);
-    if (playerNum == 1) {
-        if (!playerOneChoice) {
-        $("#choices").text("Please make a selection");
-        } else if (!playerTwoChoice) {
-            $("#RPS").hide();
-            $("#logIn").hide();
-            $("#choices").text("Waiting on Player Two");
-        } else {
-            $("#choices").text("Selections Made");
-            checkWinner();
-        }
-    }
-    if (playerNum == 2) {
-        if (!playerTwoChoice) {
-        $("#choices").text("Please make a selection");
-        } else if (!playerOneChoice) {
-            $("#RPS").hide();
-            $("#logIn").hide();
-            $("#choices").text("Waiting on Player One");
-        } else {
-            $("#choices").text("Selections Made");
-            checkWinner();
-        }
-    }
+    // $("#RPS").hide();
+    checkWinner()
 });
 
 ///////////working space below with potential errors///////////////////
 
 function checkWinner() {
-    if (playerOneChoice === playerTwoChoice) {
-        if (!playerOneChoice && !playerTwoChoice) {
-        return;
-        } else {
-            db.ref("/players/").on("value", function(snapshot) {
-                var p1Tie = snapshot.child("playerOne/ties").val();
-                p1Tie++; 
-                var p2Tie = snapshot.child("playerTwo/ties").val();
-                p2Tie++;
-                db.ref().child("/players/playerOne/ties").set( p1Tie);
-                db.ref().child("/players/playerTwo/ties").set( p2Tie);
-                reset();
-                return;
-            });
+    var playerOneChoice = playerOne.choice;
+    var playerTwoChoice = playerTwo.choice;
+    if ((playerOneChoice =='') || (playerTwoChoice == ''))  {
+        // var p1Tie = snapshot.child("playerOne/ties").val();
+        //     p1Tie++; 
+        //     var p2Tie = snapshot.child("playerTwo/ties").val();
+        //     p2Tie++;
+        //     db.ref().child("/players/playerOne/ties").set( p1Tie);
+        //     db.ref().child("/players/playerTwo/ties").set( p2Tie);
+        // reset();
+        console.log("still waiting on a player choice");
+    } 
+    else {
+        console.log("players made choices")
+        var p1Tie = playerOne.ties;
+        var p2Tie = playerTwo.ties;
+        var p1Win = playerOne.wins;
+        var p2Win = playerTwo.wins;
+        var p1Loss = playerOne.losses;
+        var p2Loss = playerTwo.losses;
+        if (playerOneChoice === playerTwoChoice) {
+            console.log("players tied")
+            p1Tie++; 
+            p2Tie++;
+            db.ref().child("/players/playerOne/ties").set( p1Tie);
+            db.ref().child("/players/playerTwo/ties").set( p2Tie);
+        } else if ((playerOneChoice == "Rock" && playerTwoChoice == "Scissors")||(playerOneChoice == "Paper" && playerTwoChoice == "Rock")||(playerOneChoice == "Scissors" && playerTwoChoice == "Paper")){
+            p1Win++; 
+            p2Loss++;
+            db.ref().child("/players/playerOne/wins").set( p1Win);
+            db.ref().child("/players/playerTwo/losses").set( p2Loss); 
+        } else if ((playerOneChoice == "Rock" && playerTwoChoice == "Paper")||(playerOneChoice == "Paper" && playerTwoChoice == "Scissors")||(playerOneChoice == "Scissors" && playerTwoChoice == "Rock")){
+            p1Loss++; 
+            p2Win++;
+            db.ref().child("/players/playerOne/losses").set( p1Loss);
+            db.ref().child("/players/playerTwo/wins").set( p2Win); 
         }
-
-    console.log("choices checked");
-    } else {
-        console.log("no ties");
+        reset(); 
     }
+    
 };
+
 
 function reset() {
-    playerOneChoice = null;
-    playerTwoChoice = null;
     db.ref().child("/players/playerOne/choice").set('');
     db.ref().child("/players/playerTwo/choice").set('');
-    $("#RPS").show();
+    // $("#RPS").show();
 };
-
-
-
 //////////////////////////////  End Game Function  //////////////////////////////
 
 
