@@ -112,8 +112,6 @@ playersData.on("value", function(snapshot) {
     var sv = snapshot.val();
 	// Check for existence of player 1 in the database
 	if (snapshot.child("playerOne").exists()) {
-        console.log("Ready Player One");
-
 		// Record player One data
 		playerOne = sv.playerOne;
 		playerOneName = playerOne.name;
@@ -140,10 +138,14 @@ playersData.on("value", function(snapshot) {
 		playerTwoName = "";
     }
 
-    // if (playerOne && playerTwo) {
-    //     $("#visitor").text("Player One and Player Two are ready...");
-    //     console.log(" player one and two logged in")
-    // }
+    if (playerOne && playerTwo) {
+        if (playerNum == "") {
+            $("#visitLogIn").show();
+            $("#logIn").hide();
+            $("#RPS").hide();
+        }
+        console.log(" player one and two logged in")
+    }
 
     if (!playerOne && !playerTwo) {
         console.log("there are no players")
@@ -166,6 +168,11 @@ playersData.on("value", function(snapshot) {
 
 playersData.on('child_removed', function() {
     roundRef.set(0);
+    if (playerNum == "" || playerNum == 3) {
+        $("#visitLogIn").hide();
+        $("#logIn").show();
+    }
+
   });
 
 //// log in function////////
@@ -234,6 +241,7 @@ $("#visitorSubmit").on("click", function(event) {
     $("#name-input").text(name);
     $("#sign-name-input").val(name);
     $("#visitLogIn").hide();
+    playerNum = 3;
 });
 
 // When the client's connection state changes...
@@ -369,6 +377,9 @@ function reset() {
     $("#choices").text("Players are making their selections");
     roundRef.set(0);
     $("#RPS").show();
+    if (playerNum == ""||playerNum == 3) {
+        $("#RPS").hide();
+    }
 
 };
 //////////////////////////////  End Game Function  //////////////////////////////
