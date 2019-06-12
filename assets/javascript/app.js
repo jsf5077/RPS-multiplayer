@@ -21,7 +21,7 @@ var chatData = db.ref("/chat");
 // connectionsRef references a specific location in our database.
 var connectionsRef = db.ref("/connections");
 
-var playersData = db.ref("/choices");
+var roundRef = db.ref("/round");
 
 // '.info/connected' is a special location provided by Firebase that is updated every time
 // the client's connection state changes.
@@ -40,6 +40,8 @@ var playerOneName = "";
 var playerTwoName = "";
 
 var playerNum = "";
+
+
 
 
 $("#visitLogIn").hide();
@@ -77,7 +79,6 @@ $("#submit").on("click", function(event) {
         time: firebase.database.ServerValue.TIMESTAMP,
         date: date
     };
-        
     // Code for handling the push
     chatData.push(chatMsg)
     //clears message input box 
@@ -305,7 +306,7 @@ $("#rock").on("click", function(event){
         console.log(playerTwo.choice);
         db.ref().child("/players/playerTwo/choice").set(playerTwo.choice);
     }
-    // $("#RPS").hide();
+    $("#RPS").hide();
     checkWinner()
 });
 $("#paper").on("click", function(event){
@@ -319,7 +320,7 @@ $("#paper").on("click", function(event){
         console.log(playerTwo.choice);
         db.ref().child("/players/playerTwo/choice").set(playerTwo.choice);
     }
-    // $("#RPS").hide();
+    $("#RPS").hide();
     checkWinner()
 });
 $("#scissors").on("click", function(event){
@@ -333,7 +334,7 @@ $("#scissors").on("click", function(event){
         console.log(playerTwo.choice);
         db.ref().child("/players/playerTwo/choice").set(playerTwo.choice);
     }
-    // $("#RPS").hide();
+    $("#RPS").hide();
     checkWinner()
 });
 
@@ -342,15 +343,10 @@ $("#scissors").on("click", function(event){
 function checkWinner() {
     var playerOneChoice = playerOne.choice;
     var playerTwoChoice = playerTwo.choice;
+    
     if ((playerOneChoice =='') || (playerTwoChoice == ''))  {
-        // var p1Tie = snapshot.child("playerOne/ties").val();
-        //     p1Tie++; 
-        //     var p2Tie = snapshot.child("playerTwo/ties").val();
-        //     p2Tie++;
-        //     db.ref().child("/players/playerOne/ties").set( p1Tie);
-        //     db.ref().child("/players/playerTwo/ties").set( p2Tie);
-        // reset();
         console.log("still waiting on a player choice");
+        roundRef.set(1);
     } 
     else {
         console.log("players made choices")
@@ -377,16 +373,34 @@ function checkWinner() {
             db.ref().child("/players/playerOne/losses").set( p1Loss);
             db.ref().child("/players/playerTwo/wins").set( p2Win); 
         }
-        reset(); 
+        roundRef.set(2); 
     }
     
 };
 
+roundRef.on("value", function(snapshot) {
+    
+    var sv = snapshot.val();
+    var round = sv
+
+    if (round == 0) {
+        console.log("players haven't made a choice");
+    } else if (round == 1) {
+        console.log("still waiting for a player to make a choice");
+    } else if (round == 2) {
+        db.ref().child("/players/playerOne/choice").set('');
+        db.ref().child("/players/playerTwo/choice").set('');
+        setTimeout(reset, 3000);
+    }
+    
+});
 
 function reset() {
     db.ref().child("/players/playerOne/choice").set('');
     db.ref().child("/players/playerTwo/choice").set('');
-    // $("#RPS").show();
+    roundRef.set(0);
+    $("#RPS").show();
+
 };
 //////////////////////////////  End Game Function  //////////////////////////////
 
