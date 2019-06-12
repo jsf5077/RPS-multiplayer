@@ -25,53 +25,67 @@
   </head>
 
   <body>
+      <div class="jumbotron banner py-3 mb-4 text-center">
+          <h1 id=title>ROSHAMBO</h1>
+          <br>
+          <h3><span id="watchers"></span> users connected</span></h3>
+      </div>
 
-    <h3>
-        <span id="watchers"></span> users connected</span>
-    </h3>
-
-    <div id="logIn">
-        <label for="author">Player Name: </label><input id="sign-name-input" type="text"><br>
-        <input id="logInSubmit" type="button" value="Send">
-    </div>
-    <div id="visitLogIn">
-        <label for="author">Visitor Name: </label><input id="visit-name-input" type="text"><br>
-        <input id="visitorSubmit" type="button" value="Send">
-    </div>
-    <div id="RPS">
-      <button id="rock">Rock</button>
-      <button id="paper">Paper</button>
-      <button id="scissors" >Scissors</button>
-    </div>
+    <div class="row">
+      <div class="col-12 text-center">
     
-    <div>
-        <p id="choices"></p>
-    </div>
+        <div id="logIn">
+            <label for="author">Player Name: </label><input id="sign-name-input" type="text"><br>
+            <input id="logInSubmit" type="button" value="Send">
+        </div>
+        <div id="visitLogIn">
+            <label for="author">Visitor Name: </label><input id="visit-name-input" type="text"><br>
+            <input id="visitorSubmit" type="button" value="Send">
+        </div>
+        <div class = "row" id="RPS">
+          <div class="col-12"><button class="btn-md col-12" id="rock">Rock</button></div>
+          <div class="col-12"><button class="btn-md col-12" id="paper">Paper</button></div>
+          <div class="col-12"><button class="btn-md col-12" id="scissors" >Scissors</button></div>
+        </div>
+        
+        <div>
+            <p id="choices"></p>
+        </div>
+        <div>
+          <p id="visitor"></p>
+        </div>
+        <div class="row" id="stats">
+          <div class="col-6" id="playerOneStats">
+              <p id="player1name"></p>
+              <p id="player1wins"></p>
+              <p id="player1losses"></p>
+              <p id="player1ties"></p>
+          </div>
+          <div class="col-6" id="playerTwoStats">
+              <p id="player2name"></p>
+              <p id="player2wins"></p>
+              <p id="player2losses"></p>
+              <p id="player2ties"></p>
+          </div>
+        </div>
+    
+    
+        <div id="main">
+            <div class="card-body" id="messages"></div>
+        </div>
+        <div id="controls">
+            <div id="name-input"></div><br>
+            <label for="content">Message: </label><input id="message-input" type="text">
+            <input id="submit" type="button" value="Send">
+        </div>    
+  
+      </div>
 
-    <div>
-      <p id="p1Name"></p>
-    </div>
-    <div>
-      <p id="p2Name"></p>
-    </div>
-    <div>
-      <p id="visitor"></p>
-    </div>
-
-
-    <div id="main">
-        <div class="card-body" id="messages"></div>
-    </div>
-    <div id="controls">
-        <div id="name-input"></div><br>
-        <label for="content">Message: </label><input id="message-input" type="text">
-        <input id="submit" type="button" value="Send">
-    </div>    
-
+    </div>      
     <script type="text/javascript" src="assets/javascript/app.js"></script>
-
-     <!-- Link to Moment.js -->
-  <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+  
+    <!-- Link to Moment.js -->
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
   </body>
 
   <!-- activity referenced: 7.2:15 -->

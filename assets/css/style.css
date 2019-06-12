@@ -1,8 +1,8 @@
-body {
+/* body {
     margin: 0 auto;
     max-width: 800px;
     padding: 0 20px;
-  }
+  } */
   
   .container {
     border: 2px solid #dedede;
@@ -10,6 +10,7 @@ body {
     border-radius: 5px;
     padding: 10px;
     margin: 10px 0;
+    overflow: auto;
   }
   
   .darker {
@@ -49,5 +50,52 @@ body {
 
   #messages {
     height:20rem;
-    overflow-y: scroll;
+    overflow:overlay;
+    overflow-wrap: break-word;
   }
+  .user-name {
+    font-weight: bold;
+  }
+  #rock {
+    font-size: 7rem;
+    background-image: url("../images/buttonBackerRock.jpg");
+    min-width: 100%;
+    min-height: 100%;
+	  background-repeat: no-repeat;
+  	background-position: center;
+    background-size: cover;
+    border-color: black;
+    color: white;
+    text-shadow: 5px 5px  rgba(0, 0, 0, 0.6);
+    -webkit-text-stroke: 2px black;
+}
+
+#paper {
+  font-size: 7rem;
+  background-image: url("../images/buttonBackerPaper.jpg");
+  min-width: 100%;
+  min-height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  border-color: rgb(0, 0, 0);
+  color: rgb(0, 0, 0);
+  text-shadow: 5px 5px  rgba(0, 0, 0, 0.6);
+  -webkit-text-stroke: 1px rgb(255, 255, 255);
+  
+}
+#scissors {
+  font-size: 7rem;
+  background-image: url("../images/buttonBackerScissors.jpg");
+  min-width: 100%;
+  min-height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  border-color: black;
+  color: rgb(245, 243, 243);
+  text-shadow: 5px 5px  rgba(0, 0, 0, 0.6);
+  -webkit-text-stroke: 2px rgb(3, 3, 3);
+}
+  
+  

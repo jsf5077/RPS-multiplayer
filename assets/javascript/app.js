@@ -71,7 +71,7 @@ $("#submit").on("click", function(event) {
         // if message isn't blank, we assign the value to the message variable
         message = $("#message-input").val().trim();
     }
-    var date = moment().format("DD/MM/YY hh:mm A");
+    var date = moment().format("MM/DD/YY hh:mm A");
 
     //locally log data for the specific chat message
     var chatMsg = {
@@ -88,20 +88,24 @@ $("#submit").on("click", function(event) {
 
     // Firebase watcher .on("child_added"
 chatData.on("child_added", function(snapshot) {
+    var messageBody = document.querySelector('#messages');
     // storing the snapshot.val() in a variable for convenience
     var sv = snapshot.val();
 
     // full list of items to the message div
     $("#messages").append(
-        "<div class='container'><span class='user-name'> " + sv.name +
-        ": </span><span class='user-message'> " + sv.message +
-        " <span class='time-right'> " + sv.date +
-        " </span></div>"
+        "<div class='container'><div class='user-name time-left'>" + sv.name +
+        ":_ </div><p class='mb-0 text-left'> " + sv.message +
+        "</p><p class='time-right mb-0'> " + sv.date +
+        " </p></div>"
     );
+    // referenced stackoverflow answer on how to keep your scroll bar at the bottom for the chat. user can go wherever in the feed, but once a new msg comes in ithe chat refreshes to the bottom https://stackoverflow.com/questions/40903462/how-to-keep-a-scrollbar-always-bottom
+    messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
     // Handle the errors
     }, function(errorObject) {
     console.log("Errors handled: " + errorObject.code);
 });
+
 
 //////////////////////////////  End Chat Function  //////////////////////////////
 
@@ -113,25 +117,28 @@ playersData.on("value", function(snapshot) {
 	// Check for existence of player 1 in the database
 	if (snapshot.child("playerOne").exists()) {
 		// Record player One data
-		playerOne = sv.playerOne;
-		playerOneName = playerOne.name;
+        playerOne = sv.playerOne;
 
-		// Update player One name
-        $("#p1Name").text(playerOneName);
+		// Update player One stats
+        $("#player1name").text("Player One Name: "+playerOne.name);
+        $("#player1wins").text("Wins:"+playerOne.wins);
+        $("#player1losses").text("Losses:"+playerOne.losses);
+        $("#player1ties").text("Ties:"+playerOne.ties);
+        
         
 	} else {
         playerOne = null;
 		playerOneName = "";
     }
     if (snapshot.child("playerTwo").exists()) {
-		console.log("Ready Player Two");
 
 		// Record player Two data
 		playerTwo = sv.playerTwo;
-		playerTwoName = playerTwo.name;
-
-		// Update player Two name
-        $("#p2Name").text(playerTwoName);
+		// Update player One stats
+        $("#player2name").text("Player Two Name: "+playerTwo.name);
+        $("#player2wins").text("Wins:"+playerTwo.wins);
+        $("#player2losses").text("Losses:"+playerTwo.losses);
+        $("#player2ties").text("Ties:"+playerTwo.ties);
         
 	} else {
         playerTwo = null;
@@ -172,8 +179,7 @@ playersData.on('child_removed', function() {
         $("#visitLogIn").hide();
         $("#logIn").show();
     }
-
-  });
+});
 
 //// log in function////////
 
@@ -190,12 +196,11 @@ $("#logInSubmit").on("click", function(event) {
         $("#name-input").text(signName);
         
         if (!playerOne) {
-            name = $("#name-input").val().trim();
             playerNum = 1;
             console.log("playerNum = 1");
             $("#RPS").show();
             playerOne = {
-                name: name,
+                name: signName,
                 wins: 0,
                 losses: 0,
                 ties: 0,
@@ -206,12 +211,10 @@ $("#logInSubmit").on("click", function(event) {
             console.log("Player One Stats on DB");
 
         } else if (!playerTwo) {
-            name = $("#name-input").val().trim()
             playerNum = 2;
-            console.log("playerNum = 2");
             $("#RPS").show();
             playerTwo = {
-                name: name,
+                name: signName,
                 wins: 0,
                 losses: 0,
                 ties: 0,
@@ -384,52 +387,29 @@ function reset() {
 };
 //////////////////////////////  End Game Function  //////////////////////////////
 
+/////////////////////////////// check user inactivity ////////////////////////////////
 
-// user enters name   
-//       assign to player one  
-//         if player one exists, assign player two
-//             if play one and two exist, become spectator 
+////////kicks the user if they remain idle for too long. This prevents the possibility of someone who is a player, but never closes the tab so that someone else could play. ref: https://stackoverflow.com/questions/667555/how-to-detect-idle-time-in-javascript-elegantly
+var idleTime = 0;
+$(document).ready(function () {
+    //Increment the idle time counter every minute.
+    var idleInterval = setInterval(timerIncrement, 60000); // 1 minute
 
-// user picks rock/paper/scissors
-//       record answer to database
-//       check is other user has answers
-//         if not yet
-//             update html to say waiting on other user
-//         if other user has answered
-//             run a function that checks winner
-//                 if user 1 choice === user 2 choice
-//                     user 1 tie++;
-//                     user 2 tie++;  
-//                 else if user 1 chose rock and user 2 chose paper
-//                     user 1 loss++
-//                     user 2 win++
-//                 else if user 1 chose rock and user 2 chose scissors
-//                     user  1 win++
-//                     user 2 loss++
-//                 else if user 1 chose scissors and user 2 chose paper
-//                     user  1 win++
-//                     user 2 loss++
-//                 else if user 1 chose scissors and user 2 chose rock
-//                     user  1 loss++
-//                     user 2 win++
-//                 else if user 1 chose paper and user 2 chose rock
-//                     user  1 win++
-//                     user 2 loss++
-//                 else if user 1 chose paper and user 2 chose scissors
-//                     user  1 loss++
-//                     user 2 win++
-//         update html to reflect winner/loser win/loss 
+    //Zero the idle timer on mouse movement.
+    $(this).mousemove(function (e) {
+        idleTime = 0;
+    });
+    $(this).keypress(function (e) {
+        idleTime = 0;
+    });
+});
 
-//         update database to reflect winner/loser win/loss 
-
-//         reset html winner/loser and user 1 & 2 choices
-
-//         reset database winner/loser and user 1 & 2 choices
-
-//         if user disconnects 
-
-
-
+function timerIncrement() {
+    idleTime = idleTime + 1;
+    if (idleTime > 1) { // 20 minutes
+        window.location.reload();
+    }
+}
 
 //       Create a game that suits this user story:
 
