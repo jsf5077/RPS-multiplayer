@@ -44,6 +44,7 @@ var playerNum = "";
 
 
 
+
 $("#visitLogIn").hide();
 $("#RPS").hide();
 
@@ -107,7 +108,7 @@ chatData.on("child_added", function(snapshot) {
 //////////////////////////////  Start Login Function  //////////////////////////////
 
 
-db.ref("/players/").on("value", function(snapshot) {
+playersData.on("value", function(snapshot) {
     var sv = snapshot.val();
 	// Check for existence of player 1 in the database
 	if (snapshot.child("playerOne").exists()) {
@@ -139,10 +140,10 @@ db.ref("/players/").on("value", function(snapshot) {
 		playerTwoName = "";
     }
 
-    if (playerOne && playerTwo) {
-        $("#visitor").text("Player One and Player Two are ready...");
-        console.log(" player one and two logged in")
-    }
+    // if (playerOne && playerTwo) {
+    //     $("#visitor").text("Player One and Player Two are ready...");
+    //     console.log(" player one and two logged in")
+    // }
 
     if (!playerOne && !playerTwo) {
         console.log("there are no players")
@@ -152,57 +153,20 @@ db.ref("/players/").on("value", function(snapshot) {
     if (playerNum == 1) {
         //so if playerNum is 1 and they disconnect, the PlayerOne database is cleared for the next person
         db.ref("/players/playerOne").onDisconnect().remove();
+        
         // otherwise if they are player two, the playerTwo database is cleared instead
     } else if (playerNum == 2) {
         db.ref("/players/playerTwo").onDisconnect().remove();
+        
     } else {
         //and if the user signing off was never assigned a number because they were a visitor, then we return nothing.
         return;
     }
 });
-//     if ((snapshot.child("playerOne").exists()) && snapshot.child("playerTwo").exists()) {
-//         $("#logIn").hide();
-//         $("#visitLogIn").show();
-//         if (playerNum == 1 || playerNum == 2) {
-//             $("#visitLogIn").hide();
-//         }
-        
-//     } else {
-//         if (snapshot.child("playerOne").exists()) {
-//             $("#p2Name").text('');
-//         } else if (snapshot.child("playerTwo").exists()) {
-//             $("#p1Name").text('');
-//         }
-//         $("#visitor").text('');
-//     }
-//     playerOneChoice = snapshot.child("playerOne/choice").val();
-//     console.log(playerOneChoice);
-//     playerTwoChoice = snapshot.child("playerTwo/choice").val(); 
-//     console.log(playerTwoChoice);
-//     if (playerNum == 1) {
-//         if (!playerOneChoice) {
-//         $("#choices").text("Please make a selection");
-//         } else if (!playerTwoChoice) {
-//             $("#RPS").hide();
-//             $("#logIn").hide();
-//             $("#choices").text("Waiting on Player Two");
-//         } else {
-//             $("#choices").text("Selections Made");
-            
-//         }
-//     }
-//     if (playerNum == 2) {
-//         if (!playerTwoChoice) {
-//         $("#choices").text("Please make a selection");
-//         } else if (!playerOneChoice) {
-//             $("#RPS").hide();
-//             $("#logIn").hide();
-//             $("#choices").text("Waiting on Player One");
-//         } else {
-//             $("#choices").text("Selections Made");
-            
-//         }
-//     }
+
+playersData.on('child_removed', function() {
+    roundRef.set(0);
+  });
 
 //// log in function////////
 
@@ -362,16 +326,19 @@ function checkWinner() {
             p2Tie++;
             db.ref().child("/players/playerOne/ties").set( p1Tie);
             db.ref().child("/players/playerTwo/ties").set( p2Tie);
+            $("#choices").text("Player One and Player Two tied!");
         } else if ((playerOneChoice == "Rock" && playerTwoChoice == "Scissors")||(playerOneChoice == "Paper" && playerTwoChoice == "Rock")||(playerOneChoice == "Scissors" && playerTwoChoice == "Paper")){
             p1Win++; 
             p2Loss++;
             db.ref().child("/players/playerOne/wins").set( p1Win);
-            db.ref().child("/players/playerTwo/losses").set( p2Loss); 
+            db.ref().child("/players/playerTwo/losses").set( p2Loss);
+            $("#choices").text("Player One wins!"); 
         } else if ((playerOneChoice == "Rock" && playerTwoChoice == "Paper")||(playerOneChoice == "Paper" && playerTwoChoice == "Scissors")||(playerOneChoice == "Scissors" && playerTwoChoice == "Rock")){
             p1Loss++; 
             p2Win++;
             db.ref().child("/players/playerOne/losses").set( p1Loss);
-            db.ref().child("/players/playerTwo/wins").set( p2Win); 
+            db.ref().child("/players/playerTwo/wins").set( p2Win);
+            $("#choices").text("Player Two wins!"); 
         }
         roundRef.set(2); 
     }
@@ -385,8 +352,9 @@ roundRef.on("value", function(snapshot) {
 
     if (round == 0) {
         console.log("players haven't made a choice");
+        $("#choices").text("Players are making their selections");
     } else if (round == 1) {
-        console.log("still waiting for a player to make a choice");
+        $("#choices").text("A player has made a selection");
     } else if (round == 2) {
         db.ref().child("/players/playerOne/choice").set('');
         db.ref().child("/players/playerTwo/choice").set('');
@@ -398,6 +366,7 @@ roundRef.on("value", function(snapshot) {
 function reset() {
     db.ref().child("/players/playerOne/choice").set('');
     db.ref().child("/players/playerTwo/choice").set('');
+    $("#choices").text("Players are making their selections");
     roundRef.set(0);
     $("#RPS").show();
 
