@@ -94,9 +94,9 @@ chatData.on("child_added", function(snapshot) {
 
     // full list of items to the message div
     $("#messages").append(
-        "<div class='container'><div class='user-name time-left'>" + sv.name +
-        ":_ </div><p class='mb-0 text-left'> " + sv.message +
-        "</p><p class='time-right mb-0'> " + sv.date +
+        "<div class='container'><div class='user-name time-left' id='chat'>" + sv.name +
+        ":_ </div><p class='mb-0 text-left' id='chat'> " + sv.message +
+        "</p><p class='time-right mb-0' id='chat'> " + sv.date +
         " </p></div>"
     );
     // referenced stackoverflow answer on how to keep your scroll bar at the bottom for the chat. user can go wherever in the feed, but once a new msg comes in ithe chat refreshes to the bottom https://stackoverflow.com/questions/40903462/how-to-keep-a-scrollbar-always-bottom

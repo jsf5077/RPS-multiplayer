@@ -98,4 +98,53 @@
   -webkit-text-stroke: 2px rgb(3, 3, 3);
 }
   
-  
+body {
+  background-image: url("../images/bodyBackground.jpg");
+  /* display: flex; */
+  flex-shrink: 0;
+  min-width: 100%;
+  min-height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+#titleimg {
+  background-image: url("../images/titleBackground.jpg");
+  background-size: cover;
+  min-width: 100%;
+  min-height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+h1 {
+  font-family: 'Rubik Mono One', sans-serif;
+  color: white;
+  text-shadow: 5px 5px  rgba(0, 0, 0, 0.6);
+  -webkit-text-stroke: 2px rgb(3, 3, 3);
+}
+h3 {
+  font-family: 'Rubik Mono One', sans-serif;
+  color: white;
+  text-shadow: 5px 5px  rgba(0, 0, 0, 0.6);
+  -webkit-text-stroke: 2px rgb(3, 3, 3);
+}
+
+p {
+  font-family: 'Heebo', sans-serif;
+  color: white;
+}
+#chat {
+  font-family: 'Heebo', sans-serif;
+  color: black;
+}
+p {
+  font-family: 'Heebo', sans-serif;
+  color: white;
+}
+#playerName {
+  font-family: 'Heebo', sans-serif;
+  font-size: 2rem;
+  color: white;
+  text-shadow: 2px 2px  rgba(0, 0, 0, 0.6);
+
+}
