@@ -94,7 +94,7 @@ chatData.on("child_added", function(snapshot) {
 
     // full list of items to the message div
     $("#messages").append(
-        "<div class='container'><div class='user-name time-left' id='chat'>" + sv.name +
+        "<div class='container' id='chatOutline'><div class='user-name time-left' id='chat'>" + sv.name +
         ":_ </div><p class='mb-0 text-left' id='chat'> " + sv.message +
         "</p><p class='time-right mb-0' id='chat'> " + sv.date +
         " </p></div>"

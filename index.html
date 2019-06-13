@@ -29,47 +29,55 @@
   </head>
 
   <body>
-      <div class="jumbotron banner py-3 mb-4 col-12 text-center" id="titleimg">
-          <h1 class="display-4" id=title>ROSHAMBO</h1>
-          <br>
-          <h3><span id="watchers"></span> users connected</span></h3>
-      </div>
+    <div class="jumbotron banner py-3 mb-4 col-12 text-center" id="titleimg">
+        <h1 class="display-4" id=title>ROSHAMBO</h1>
+        <br>
+        <h4><span id="watchers"></span> users connected</span></h4>
+    </div>
 
-    <div class="">
+    <div>
       <div class="col-12 text-center">
     
-        <div id="logIn">
-            <label for="author" id="playerName">Player Name: </label><input id="sign-name-input" type="text"><br>
-            <input id="logInSubmit" type="button" value="Send" id="playerNameButton">
-        </div>
-        <div id="visitLogIn">
-            <label for="author" id="playerName">Visitor Name: </label><input id="visit-name-input" type="text"><br>
-            <input id="visitorSubmit" type="button" value="Send"  id="playerNameButton">
-        </div>
-        <div class = "row" id="RPS">
-          <div class="col-12"><button class="btn-md col-12" id="rock">Rock</button></div>
-          <div class="col-12"><button class="btn-md col-12" id="paper">Paper</button></div>
-          <div class="col-12"><button class="btn-md col-12" id="scissors" >Scissors</button></div>
+        <div class="card bg-dark">
+          <div id="logIn">
+            <label for="author" id="playerName">Player Name: </label>
+            <input id="sign-name-input" type="text">
+            <input class="btn"id="logInSubmit" type="button" value="Send" id="playerNameButton">
+          </div>
+          <div id="visitLogIn">
+            <label for="author" id="playerName">Visitor Name: </label>
+            <input id="visit-name-input" type="text">
+            <input class="btn"id="visitorSubmit" type="button" value="Send"  id="playerNameButton">
+          </div>
+          <div>
+            <p id="choices"></p>
+          </div>
+          </div>
+          <div class = "row" id="RPS">
+            <div class="col-12"><button class="btn-md col-12" id="rock">Rock</button></div>
+            <div class="col-12"><button class="btn-md col-12" id="paper">Paper</button></div>
+            <div class="col-12"><button class="btn-md col-12" id="scissors" >Scissors</button>
+          </div>
         </div>
         
-        <div>
-            <p id="choices"></p>
-        </div>
+        
         <div>
           <p id="visitor"></p>
         </div>
-        <div class="row" id="stats">
-          <div class="col-6" id="playerOneStats">
+        <div class=" container-fluid card justify-content-center mb-2" id="stats">
+          <div class="row" id="statsRow">
+            <div class="card col-6" id="playerOneStats">
               <p id="player1name"></p>
               <p id="player1wins"></p>
               <p id="player1losses"></p>
               <p id="player1ties"></p>
-          </div>
-          <div class="col-6" id="playerTwoStats">
+            </div>
+            <div class="card bg-dark col-6" id="playerTwoStats">
               <p id="player2name"></p>
               <p id="player2wins"></p>
               <p id="player2losses"></p>
               <p id="player2ties"></p>
+            </div>
           </div>
         </div>
     
@@ -79,8 +87,9 @@
         </div>
         <div id="controls">
             <div id="name-input"></div><br>
-            <label for="content">Message: </label><input id="message-input" type="text">
-            <input id="submit" type="button" value="Send">
+            <label for="content">Message: </label>
+            <input id="message-input" type="text">
+            <input class="btn" id="submit" type="button" value="Send">
         </div>    
   
       </div>
