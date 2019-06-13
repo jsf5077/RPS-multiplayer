@@ -23,6 +23,10 @@ var connectionsRef = db.ref("/connections");
 
 var roundRef = db.ref("/round");
 
+var won = db.ref("/playerOneWon");
+var lost = db.ref("/playerOneLost");
+var tied = db.ref("/playerOneTied");
+
 // '.info/connected' is a special location provided by Firebase that is updated every time
 // the client's connection state changes.
 // '.info/connected' is a boolean value, true if the client is connected and false if they are not.
@@ -40,9 +44,6 @@ var playerOneName = "";
 var playerTwoName = "";
 
 var playerNum = "";
-
-
-
 
 
 $("#visitLogIn").hide();
@@ -337,19 +338,19 @@ function checkWinner() {
             p2Tie++;
             db.ref().child("/players/playerOne/ties").set( p1Tie);
             db.ref().child("/players/playerTwo/ties").set( p2Tie);
-            $("#choices").text("Player One and Player Two tied!");
+            tied.set(1);
         } else if ((playerOneChoice == "Rock" && playerTwoChoice == "Scissors")||(playerOneChoice == "Paper" && playerTwoChoice == "Rock")||(playerOneChoice == "Scissors" && playerTwoChoice == "Paper")){
             p1Win++; 
             p2Loss++;
             db.ref().child("/players/playerOne/wins").set( p1Win);
             db.ref().child("/players/playerTwo/losses").set( p2Loss);
-            $("#choices").text("Player One wins!"); 
+            won.set(1);
         } else if ((playerOneChoice == "Rock" && playerTwoChoice == "Paper")||(playerOneChoice == "Paper" && playerTwoChoice == "Scissors")||(playerOneChoice == "Scissors" && playerTwoChoice == "Rock")){
             p1Loss++; 
             p2Win++;
             db.ref().child("/players/playerOne/losses").set( p1Loss);
             db.ref().child("/players/playerTwo/wins").set( p2Win);
-            $("#choices").text("Player Two wins!"); 
+            lost.set(1);
         }
         roundRef.set(2); 
     }
@@ -377,14 +378,39 @@ roundRef.on("value", function(snapshot) {
 function reset() {
     db.ref().child("/players/playerOne/choice").set('');
     db.ref().child("/players/playerTwo/choice").set('');
+    roundRef.set(0);  
+    won.set(0);
+    lost.set(0);
+    tied.set(0);
     $("#choices").text("Players are making their selections");
-    roundRef.set(0);
     $("#RPS").show();
     if (playerNum == ""||playerNum == 3) {
         $("#RPS").hide();
     }
 
 };
+
+won.on("value", function(snapshot) {
+    var sv = snapshot.val();
+    var winner = sv
+    if (winner == 1) {
+        $("#choices").text("Player One Won!");
+    }
+});
+lost.on("value", function(snapshot) {
+    var sv = snapshot.val();
+    var loser = sv
+    if (loser == 1) {
+        $("#choices").text("Player Two Won!");
+    }
+});
+tied.on("value", function(snapshot) {
+    var sv = snapshot.val();
+    var ties = sv
+    if (ties == 1) {
+        $("#choices").text("Player One and Player Two Tie!");
+    }
+});
 //////////////////////////////  End Game Function  //////////////////////////////
 
 /////////////////////////////// check user inactivity ////////////////////////////////
