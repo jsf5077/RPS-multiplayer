@@ -1,6 +1,7 @@
+# RPS-multiplayer
+
 https://jsf5077.github.io/RPS-multiplayer/
 
-# RPS-multiplayer
 Hello and welcome to Roshambo! Otherwise known as Rock Paper Scissors.
 
 This project is to demonstrate the ability to use a database for storing data that can be accessed by multiple users on the page from their own devices. Database requires a whole new level of thinking for the logic as it requires you to think about how multiple pages are handling the same information depending on the user. It also requires that one user cant break the page for another user. As demonstated in the game if you open multiple browser pages, you will find that the page behaves differently for each page as data is entered and then dynamically updated throughout the whole system. 
