@@ -1,6 +1,6 @@
-# RPS-multiplayer
+# Roshambo
 
-https://jsf5077.github.io/RPS-multiplayer/
+https://jsf5077.github.io/Roshambo/
 
 Hello and welcome to Roshambo! Otherwise known as Rock Paper Scissors.
 
