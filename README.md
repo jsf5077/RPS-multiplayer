@@ -1,11 +1,24 @@
 # Roshambo
+Welcome to Roshambo! Otherwise known as Rock Paper Scissors. Grab some friends, have them sign in and see who is the best!
 
-https://jsf5077.github.io/Roshambo/
+## What is this?
 
-Hello and welcome to Roshambo! Otherwise known as Rock Paper Scissors.
+This is an application that demonstrates the use of a database. In this case, the database keeps track in realtime when new users have signed on/off, when players choices have been made, and the final outcome of each round. There is also a chatroom installed so that players can talk trash to one another. 
 
-This project is to demonstrate the ability to use a database for storing data that can be accessed by multiple users on the page from their own devices. The database requires a whole new level of thinking for the logic as it requires you to think about how multiple pages are handling the same information depending on the user. It also requires that one user cant break the page for another user. As demonstrated in the game if you open multiple browser pages, you will find that the page behaves differently for each page as data is entered and then dynamically updated throughout the whole system.
+## How to Play:
+- Open the app/game: https://jsf5077.github.io/Roshambo/
+- Choose a name.
+- If there is not an active game, you will be made a game player and will be given the choice of rock, paper, scissors.
+- Once two players have made a choice, the game will update the winner/loser or tied stats and the players make their next choice.
+- If you are visitor, you get front row seats to all the action as you wait for a player spot to become available.
+- Whether you are a player or a visitor, you are always given the option to chat in the chatroom. Maybe even spice it up a little with     some good old fashioned trash talking.
 
-Databases are a very crucial part of how webpages can communicate with one another. Almost everything a user can access on the internet is attached to a database one way or another. Without this ability there is probably no internet as everything would be logged locally on your device with nowhere to go. 
+## Screenshot:
 
-It is highly recommended that you review the databse you are using along with their logic in order to understand how to access them. Before you begin typing out anything, you should consider mapping out the page with various scenarios your page could encounter so that you can plan accordingly in order to avoid bugs or site crashes. If you are new to this, you will be overwhelmed and it the only way to get confortable with this material is practice.
+![Screenshot of game](https://user-images.githubusercontent.com/37354778/66722479-3c31de80-eddc-11e9-8fc4-0152efb2c483.png)
+
+## Built with:
+- Javascript
+- HTML
+- CSS
+- Firebase DB
